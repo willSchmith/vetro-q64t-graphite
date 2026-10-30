@@ -1,0 +1,46 @@
+{
+  "testedOn": "2026-10-30",
+  "model": "QE65Q64TAUXXH",
+  "firmware": "T-NKLDEUC-2743.0",
+  "tizen": "5.5",
+  "rootUid": 0,
+  "node": "4.4.3",
+  "fullKernelRestartVerified": true,
+  "remoteReadySecondsBefore": 36.89,
+  "remoteReadySecondsAfter": 20.04,
+  "dockProcessStartSeconds": 10.64,
+  "homePanelChecks": [
+    "reorder",
+    "add",
+    "remove",
+    "minimum one app",
+    "duplicate rejected",
+    "disabled rejected",
+    "injection rejected",
+    "stale revision rejected",
+    "native acknowledgement",
+    "same dock PID",
+    "same pilot connection",
+    "original order restored"
+  ],
+  "nativeHomeHiddenSamples": 30,
+  "nativeLogicChecks": 5015,
+  "nativeLogicFailures": 0,
+  "limitations": [
+    "Single-device compatibility result",
+    "UI animation setting alone did not establish a measurable speedup",
+    "Full cold boot still takes time"
+  ],
+  "homePanelColdRestart": {
+    "passed": true,
+    "fullKernelRestart": true,
+    "singleAppPersisted": true,
+    "originalOrderRestored": true,
+    "sameDockOnRestore": true,
+    "sameRemoteOnRestore": true,
+    "remoteReadySeconds": 13.78,
+    "observedCompleteReadyUptime": 28.11
+  },
+  "releaseUpdaterVerified": true,
+  "dashboardLanguage": "English"
+}

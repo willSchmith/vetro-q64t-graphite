@@ -1,0 +1,12 @@
+'use strict';
+const fs=require('fs'),path=require('path'),vm=require('vm'),assert=require('assert');
+const root=path.resolve(__dirname,'..'),service=path.join(root,'app/service');
+for(const n of fs.readdirSync(service).filter(n=>n.endsWith('.js')))new vm.Script(fs.readFileSync(path.join(service,n),'utf8'),{filename:n});
+const html=require(service+'/dashboard.js')();for(const m of html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g))new vm.Script(m[1]);
+for(const text of ['Home panel','Save to TV','Installed and enabled apps','Samsung / Graphite','Your TV settings','Remote — current mappings'])assert(html.includes(text),text);
+for(const text of ['Zapisz na TV','Twoje ustawienia TV','Odczyt ustawień','Przypięte aplikacje','Grafitowy','nagrywanie TV','>Pilot</button>'])assert(!html.includes(text),'Unexpected Polish UI: '+text);
+const H=require(service+'/home-panel-q64t.js');const catalog={registry:{a:{appId:'sample.video',title:'Video',hidden:false},b:{appId:'sample.disabled',title:'Disabled',hidden:false},c:{appId:'sample.service',title:'Service',hidden:false},d:{appId:'sample.hidden',title:'Hidden',hidden:true}},icons:{},packageIcons:{}};
+const inventory={apps:[{appId:'sample.video',disabled:false,show:true,component:'uiapp'},{appId:'sample.disabled',disabled:true,show:true,component:'uiapp'},{appId:'sample.service',disabled:false,show:true,component:'svcapp'},{appId:'sample.hidden',disabled:false,show:true,component:'uiapp'}]};
+const choices=H.choices(catalog,inventory);assert.deepEqual(choices.map(x=>x.appId),['sample.video']);assert.throws(()=>H.choices(catalog,{registryError:'unavailable',apps:[]}));assert.throws(()=>H.validate([],choices));assert.throws(()=>H.validate(['sample.video','sample.video'],choices));assert.throws(()=>H.validate(['sample.disabled'],choices));assert.throws(()=>H.validate(['sample.video;id'],choices));assert.throws(()=>H.validate(Array(39).fill('sample.video'),choices));
+const row=H.encode(H.validate(['sample.video'],choices));assert.deepEqual(H.rows(row).map(x=>x.appId),['sample.video','sys:org.tizen.menu','panel:inputs']);
+console.log('PASS: all service/embedded dashboard scripts parse; English labels; app availability; validation; native row encoding.');

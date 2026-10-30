@@ -1,0 +1,11 @@
+'use strict';
+var fs=require('fs'),BASE='/opt/vetro-boot/blocked-apps/';
+function Control(execute){this.execute=execute;this.pending=false;this.timer=null;this.error=null;this.watcher=null;this.queued=null;this.dirty=false;}
+Control.prototype.tick=function(){var self=this;if(this.pending||!fs.existsSync(BASE+'enabled'))return Promise.resolve();this.pending=true;this.dirty=false;return this.execute('/bin/sh -c "$(cat /opt/vetro-boot/blocked-apps/apply.sh)" vetro-app-blocks guard',20000).then(function(r){if(r.exit_code||r.timed_out)throw Error(r.stderr||'App-block policy check failed');self.error=null;}).catch(function(e){self.error=e.message;}).then(function(){self.pending=false;if(self.dirty)self.queue();});};
+Control.prototype.queue=function(){var self=this;this.dirty=true;if(this.pending||this.queued)return;this.queued=setTimeout(function(){self.queued=null;self.tick();},1000);};
+Control.prototype.start=function(){if(this.timer)return;var self=this;try{this.watcher=fs.watch('/opt/dbspace',function(event,name){if(name&&/^\.pkgmgr_parser\.db(?:-wal)?$/.test(String(name)))self.queue();});this.watcher.on('error',function(){if(self.watcher){self.watcher.close();self.watcher=null;}});}catch(e){}this.timer=setInterval(function(){self.tick();},60000);this.tick();};
+Control.prototype.status=function(inventory){
+ var r={configured:false,groups:[],error:this.error,pending:this.pending,watchingRegistry:!!this.watcher,lastCheck:null,rebootVerified:false};
+ try{var p=JSON.parse(fs.readFileSync(BASE+'policy.json','utf8'));r.configured=fs.existsSync(BASE+'enabled')&&fs.existsSync(BASE+'apply.sh');try{var proof=JSON.parse(fs.readFileSync(BASE+'last-check.json','utf8')),boot=fs.readFileSync('/proc/sys/kernel/random/boot_id','utf8').trim();r.lastCheck=proof.timestamp;r.rebootVerified=!!(p.initialBootId&&p.initialBootId!==boot&&proof.bootId===boot);}catch(ignore){}var apps=inventory&&inventory.apps||[];r.groups=p.groups.map(function(g){var members=apps.filter(function(a){return g.packages.indexOf(a.packageId)>=0;});return {name:g.name,installedEntries:members.length,blocked:members.length>0&&members.every(function(a){return a.disabled;}),removed:members.length===0};});}catch(e){r.error=e.message;}return r;
+};
+module.exports={Control:Control};

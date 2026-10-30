@@ -1,0 +1,1 @@
+var fs=require("fs"),M=require("module");M._extensions[".js"]=function(m,f){m._compile(fs.readFileSync(f,"utf8"),f);};require("/run/vetro-q64t/service/main.js");

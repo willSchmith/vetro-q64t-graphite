@@ -1,0 +1,21 @@
+'use strict';
+// Read actual state; this view never changes settings or launches an application.
+var APP_LIST=[['Emby','vYmY3ACVaa'],['YouTube','9Ur5IzDKqV'],['Prime Video','org.tizen.primevideo'],['HBO Max','5b8c3eb16b'],['Netflix','org.tizen.netflix-app'],['Disney+','MCmYXNxgcu'],['Apple TV','com.samsung.tv.aria-video'],['Rakuten TV','vbUQClczfR'],['SkyShowtime','skysh0WTIM'],['SWEET.TV','FyObqYlHVG'],['MEGOGO','BEd6UQZYva'],['CANAL+','QmpwflxWdt'],['Spotify','rJeHak5zRg'],['Viaplay','niYSnzL6h1'],['HBO GO','8GRMGDJSAD'],['HBO Max (legacy)','cj37Ni3qXM'],['SmartOne IPTV','p9WC6wWKA1'],['M3U IPTV','CYL8nSudXE'],['Gallery','com.samsung.tv.gallery']];
+var KEYS={'226':'Netflix','500':'Rakuten TV','522':'Ambient — short press','527':'Ambient — long press','216':'Microphone — hold'};
+var HOME={'3201606009872':'Emby','111299001912':'YouTube','3201910019365':'Prime Video','3202301029760':'HBO Max','RF':'Terrestrial TV'};
+function read(c){
+ function safe(p){return p.catch(function(e){return {error:e.message};});}
+ return Promise.all([safe(c.inventory()),safe(c.home()),safe(c.wins()),safe(c.hbbtv())]).then(function(a){
+  var inventory=a[0],apps=inventory.apps||[],input=c.input(),rules=c.rules(),platform=c.platform(),displayHome=c.homeDisplay?c.homeDisplay():null;
+  var appearance=c.appearance?c.appearance():null,homeVisibility=c.homeVisibility?c.homeVisibility():{configured:false};if(appearance&&appearance.selected==='graphite'&&appearance.dock&&appearance.dock.ready){homeVisibility=Object.assign({},homeVisibility,{nativeActive:homeVisibility.active,active:true,appsHidden:true,searchHidden:true,customDock:true,mechanism:'Custom Home contains only the app row, Settings and Sources; native Home is not displayed'});}
+  var physical=rules.filter(function(r){return r.trigger.type==='physical';}).map(function(r){return {id:r.id,button:KEYS[r.trigger.value]||'Code '+r.trigger.value,code:r.trigger.value,enabled:r.enabled,holdMs:r.trigger.holdMs||null,
+   action:r.actions.length?r.actions.map(function(t){var app=apps.find(function(x){return x.appId===t.appId;});return t.type==='launch'?(t.appId==='com.samsung.tv.searchall'?'Search · keyboard':app&&app.name||t.appId):t.key||t.type;}).join(', '):'Blocked',
+   active:r.enabled&&input.policy.connected&&input.policy.mode==='filter'&&input.policy.blocked.indexOf(r.trigger.value)>=0};});
+  return {ts:Date.now(),appProtection:c.appBlocks?c.appBlocks(inventory):null,appearance:appearance,uiPerformance:require('./ui-performance-q64t.js').read(),backgroundServices:require('./service-blocks-q64t.js').read(),root:{active:!!(platform.self&&platform.self.uid===0),survivesReboot:!!(platform.boot&&platform.boot.verified),bootConfigured:!!(platform.boot&&platform.boot.configured),startedByBootHook:!!(platform.self&&platform.self.autostart)},
+   remote:{rules:physical,connected:input.policy.connected,enabled:!!(input.preference&&input.preference.enabled),error:input.error||null,persistence:platform.boot&&platform.boot.verified?(input.policy.connected?'Rules saved; remote interception active; root startup verified after restart':'Rules saved; root started automatically; remote interception inactive'):platform.boot&&platform.boot.configured?'Rules saved; root startup configured; cold boot verification pending':'Rules saved; requires an active root session'},
+   home:{inputs:c.homeInputs?c.homeInputs():[],ambient:homeVisibility,version:a[1].version,entries:displayHome?displayHome.map(function(e){return {entry:e.appId,label:e.label};}):(a[1].entries||[]).map(function(e){var id=e.split('@')[1];return {entry:e,label:HOME[id]||id||e};}),error:a[1].error||null},
+   wins:a[2],hbbtv:a[3],apps:APP_LIST.map(function(pair){var members=apps.filter(function(x){return x.packageId===pair[1];});return {name:pair[0],packageId:pair[1],state:inventory.error||inventory.registryError?'unknown':!members.length?'removed':members.every(function(x){return x.disabled;})?'disabled':members.some(function(x){return x.disabled;})?'partial':'enabled'};}),
+   verification:platform.boot&&platform.boot.currentBootObserved?'Current state after a full TV restart: root, remote interception, app registry, Home files and services.':'App registry, Home files, services and remote interception. Full TV restart not yet verified.'};
+ });
+}
+module.exports={read:read};

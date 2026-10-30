@@ -1,0 +1,57 @@
+{
+  "model": "QE65Q64TAUXXH",
+  "firmware": "T-NKLDEUC-2743.0",
+  "tizen": "5.5",
+  "nativeResources": [
+    {
+      "name": "app_custom_colortable.json",
+      "target": "/usr/apps/com.samsung.tv.theme-resource/shared/res/PRINCIPLE/COLOR_TABLE/app_custom_colortable.json",
+      "originalSha256": "1b012f7ba7445e6bef8d48d0c1ffaea09f8812ef7658999869c34d5f754af2eb"
+    },
+    {
+      "name": "principle_colortable.json",
+      "target": "/usr/apps/com.samsung.tv.theme-resource/shared/res/PRINCIPLE/COLOR_TABLE/principle_colortable.json",
+      "originalSha256": "1be75337e26ee9ccba09822f8023e3332f3136e9dbbe0494cb7f5ecac114eb9f"
+    },
+    {
+      "originalSha256": "ec6be245df4c49b59732c7d1eb949814c182521c9cb388e8b03e1f2d227a96b4",
+      "name": "menu.edj",
+      "target": "/usr/apps/com.samsung.tv.theme-resource/shared/res/org.tizen.menu/edje/menu.edj"
+    },
+    {
+      "originalSha256": "3c6093754189166bcad7054641ac502d08466a3468e9628b23f91ddf924404c8",
+      "name": "setting_bg_base.png",
+      "target": "/usr/apps/com.samsung.tv.theme-resource/shared/res/org.tizen.menu/Settings/setting_bg_base.png"
+    },
+    {
+      "name": "mainmenu.json",
+      "target": "/usr/apps/settings-datafw/res/jsons/tv/mainmenu.json",
+      "originalSha256": "52b4434efbf7276773489bcfead4fde09a52cbf164be02e12b3ef1e270dbc3d5"
+    },
+    {
+      "name": "system.json",
+      "target": "/usr/apps/settings-datafw/res/jsons/tv/system.json",
+      "originalSha256": "1de47e50f568e0874c31a06a1c57a1f8357498a5e047bda028158a877fd571f0"
+    },
+    {
+      "name": "menu-theme.edj",
+      "target": "/usr/apps/com.samsung.tv.theme-resource/shared/res/org.tizen.menu/edje/menu-theme.edj",
+      "originalSha256": "a2f95ac683e48acad5293cb7b9e0e99f9905512ff1ad9025cffeef8decae5625"
+    },
+    {
+      "name": "support.edj",
+      "target": "/usr/apps/com.samsung.tv.theme-resource/shared/res/org.tizen.menu/edje/support.edj",
+      "originalSha256": "a996b83aba57f0e46a63ce37db57971f6bb69e6c1793a96c70a78430fa059475"
+    }
+  ],
+  "renderer": [
+    {
+      "target": "/usr/apps/com.samsung.tv.csfs/bin/csfs.dll",
+      "originalSha256": "395d380416d4eb5abb0eea6e61911a2296fa9c101fc35d8fc0134633bff0e1d0"
+    },
+    {
+      "target": "/usr/apps/com.samsung.tv.csfs/bin/.native_image/csfs.ni.dll",
+      "originalSha256": "a3ff891978892ac9afb0d323a1399f8766d041ba08fd801b9c907a1b843ea38d"
+    }
+  ]
+}

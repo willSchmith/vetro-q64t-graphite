@@ -1,0 +1,11 @@
+'use strict';
+var f=require('fs'),rowfile=process.argv[1],contextfile=process.argv[2],changed=Number(process.argv[3]);
+var apps=f.readFileSync(rowfile,'utf8').trim().split('\n').filter(Boolean).map(function(x){var p=x.split('|');return {appId:p[0],disabled:p[1]==='true'};});
+if(apps.some(function(x){return !x.disabled;}))throw Error('Native app block readback failed');
+var ids=apps.map(function(x){return x.appId;}),contexts=[],targets={};
+var contextText=f.readFileSync(contextfile,'utf8'),lineMatch,linePattern=/^\s*([A-Za-z0-9_.-]+)\s+\((\d+)\)\s*$/gm;while((lineMatch=linePattern.exec(contextText)))contexts.push({appId:lineMatch[1],pid:Number(lineMatch[2])});
+contextText.split(/=+/).forEach(function(s){var a=/\bappid:\s*(\S+)/.exec(s),p=/\bpid:\s*(\d+)/.exec(s);if(a&&p)contexts.push({appId:a[1],pid:Number(p[1])});});
+contexts.forEach(function(x){if(ids.indexOf(x.appId)<0)return;if(x.pid<2||x.pid===process.pid)throw Error('Unsafe app-context PID');if(contexts.some(function(o){return o.pid===x.pid&&ids.indexOf(o.appId)<0;}))throw Error('Target shares a process with an unblocked application');try{var s=f.readFileSync('/proc/'+x.pid+'/stat','utf8'),a=s.slice(s.lastIndexOf(')')+2).split(/\s+/);targets[x.pid]={pid:x.pid,start:a[19],appId:x.appId};}catch(e){if(e.code!=='ENOENT')throw e;}});
+Object.keys(targets).forEach(function(k){try{process.kill(Number(k),'SIGTERM');}catch(e){if(e.code!=='ESRCH')throw e;}});
+function finish(){Object.keys(targets).forEach(function(k){try{var s=f.readFileSync('/proc/'+k+'/stat','utf8'),a=s.slice(s.lastIndexOf(')')+2).split(/\s+/);if(a[19]===targets[k].start&&a[0]!=='Z')process.kill(Number(k),'SIGKILL');}catch(e){if(e.code!=='ENOENT'&&e.code!=='ESRCH')throw e;}});var p='/opt/vetro-boot/blocked-apps/last-check.json';f.writeFileSync(p+'.pending',JSON.stringify({timestamp:Date.now(),bootId:f.readFileSync('/proc/sys/kernel/random/boot_id','utf8').trim(),changed:changed,apps:apps,stopped:Object.keys(targets).map(function(k){return targets[k];})})+'\n',{mode:384});f.renameSync(p+'.pending',p);console.log('BLOCK_POLICY_VERIFIED '+apps.length+' app entries; changed='+changed+'; stopped='+Object.keys(targets).length);}
+if(Object.keys(targets).length)setTimeout(finish,250);else finish();

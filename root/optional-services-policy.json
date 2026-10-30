@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "units": [
+    "ambient-ua-agent.service",
+    "slive-provider-daemon.service",
+    "sddp.service",
+    "pvr-service.service",
+    "gamepad-service.service",
+    "com.samsung.tv.nfc-monitor.service"
+  ],
+  "activators": [
+    "net.auad.busname",
+    "org.tizen.tv.gamepadservice.busname",
+    "slive-provider-daemon.path"
+  ],
+  "markers": [
+    "/opt/usr/share/systemd/system/slive-provider-daemon",
+    "/tmp/SDDP_NOT_SUPPORTED"
+  ],
+  "scope": "exactly six approved optional services; Wi-Fi excluded"
+}

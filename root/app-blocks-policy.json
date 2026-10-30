@@ -1,0 +1,67 @@
+{
+  "version": 1,
+  "packages": [
+    "MCmYXNxgcu",
+    "com.samsung.tv.aria-video",
+    "30IKH0OX8U",
+    "QmpwflxWdt",
+    "skysh0WTIM",
+    "BEd6UQZYva",
+    "FyObqYlHVG"
+  ],
+  "apps": [
+    "30IKH0OX8U.TestBGService",
+    "30IKH0OX8U.cwservice",
+    "30IKH0OX8U.tilesservice",
+    "BEd6UQZYva.mggtizen",
+    "DEd6UQZYva.userPreview",
+    "FyObqYlHVG.PreviewBGSvc",
+    "FyObqYlHVG.SWEETTV",
+    "MCmYXNxgcu.DisneyPlus",
+    "MCmYXNxgcu.DisneyPlusService",
+    "QmpwflxWdt.CanalPlusLauncher",
+    "com.samsung.tv.aria-dummy",
+    "com.samsung.tv.aria-video",
+    "skysh0WTIM.SkyShowtime",
+    "skysh0WTIM.service"
+  ],
+  "groups": [
+    {
+      "name": "Disney+",
+      "packages": [
+        "MCmYXNxgcu"
+      ]
+    },
+    {
+      "name": "Apple TV",
+      "packages": [
+        "com.samsung.tv.aria-video",
+        "30IKH0OX8U"
+      ]
+    },
+    {
+      "name": "CANAL+",
+      "packages": [
+        "QmpwflxWdt"
+      ]
+    },
+    {
+      "name": "SkyShowtime",
+      "packages": [
+        "skysh0WTIM"
+      ]
+    },
+    {
+      "name": "MEGOGO",
+      "packages": [
+        "BEd6UQZYva"
+      ]
+    },
+    {
+      "name": "SWEET.TV",
+      "packages": [
+        "FyObqYlHVG"
+      ]
+    }
+  ]
+}
